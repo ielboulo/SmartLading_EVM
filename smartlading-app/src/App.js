@@ -1,102 +1,131 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { ThemeProvider, CssBaseline, Box, Button, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, Typography, Box } from '@mui/material';
+import { ethers } from 'ethers';
 
-import theme from './theme';
-
-import Navbar from './components/NavBar';
-import Sidebar from './components/SideBar';
-import Register from './components/Register';
-import InitializeSC from './components/Initialize';
-import UploadBL from './components/UploadBL';
-import Dashboard from './components/Dashboard';
-import BillOfLadingDetails from './components/BillOfLadingDetails';
-
-import welcomeImage from './asset/smartlading_home.png';
+const contractAddress = "0x0116686e2291dbd5e317f47fadbfb43b599786ef";
+const contractABI = [
+  {
+    "type": "function",
+    "name": "retrieve",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "store",
+    "inputs": [{"name": "newNumber", "type": "uint256", "internalType": "uint256"}],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "storedNumber",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+    "stateMutability": "view"
+  }
+];
 
 function App() {
   const [walletAddress, setWalletAddress] = useState("");
+  const [number, setNumber] = useState(null);
+  const [inputNumber, setInputNumber] = useState("");
 
-  // Function to connect MetaMask
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
-        setWalletAddress(accounts[0]); // Set the first wallet address
+        setWalletAddress(accounts[0]);
+        await fetchNumber();
       } catch (error) {
         console.error("Error connecting to MetaMask:", error);
         alert("Failed to connect to MetaMask.");
       }
     } else {
-      alert("MetaMask is not installed. Please install it to use this app.");
+      alert("MetaMask is not installed.");
     }
   };
 
-  return (
-    <Router>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-          <Navbar />
-          <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-            <Sidebar />
-            <Box
-              component="main"
-              sx={{
-                flexGrow: 1,
-                p: 3,
-                overflow: 'auto',
-                backgroundColor: '#f5f5f5',
-                width: { sm: `calc(100% - 240px)` }, // Adjust based on sidebar width
-              }}
-            >
-              <Box sx={{ mb: 2 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={connectWallet}
-                  sx={{ mb: 2 }}
-                >
-                  {walletAddress ? "Wallet Connected" : "Connect Wallet"}
-                </Button>
-                {walletAddress && (
-                  <Typography variant="body1" color="text.secondary">
-                    Connected Wallet: {walletAddress}
-                  </Typography>
-                )}
-              </Box>
-              <Routes>
-                <Route path="/uploadBL" element={<UploadBL />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route
-                  path="/bill-of-lading/:bolNumber"
-                  element={<BillOfLadingDetails />}
-                />
+  const fetchNumber = async () => {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      const currentNumber = await contract.storedNumber();
+      setNumber(currentNumber.toString());
+    } catch (error) {
+      console.error("Error fetching number:", error);
+    }
+  };
 
-                {/* Add other routes here */}
-                <Route
-                  path="/"
-                  element={
-                    <div>
-                      <h1>Welcome to SmartLading Platform</h1>
-                      <img
-                        src={welcomeImage}
-                        alt="Welcome"
-                        style={{ width: '90%', height: '600px' }}
-                      />
-                      <Dashboard />
-                    </div>
-                  }
-                />
-              </Routes>
-            </Box>
-          </Box>
-        </Box>
-      </ThemeProvider>
-    </Router>
+  const setNewNumber = async () => {
+    if (!inputNumber || !walletAddress) return;
+    
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      
+      const tx = await contract.store(inputNumber);
+      await tx.wait();
+      await fetchNumber();
+      setInputNumber("");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Transaction failed.");
+    }
+  };
+
+  useEffect(() => {
+    if (walletAddress) {
+      fetchNumber();
+    }
+  }, [walletAddress]);
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={connectWallet}
+        sx={{ mb: 2 }}
+      >
+        {walletAddress ? "Connected" : "Connect Wallet"}
+      </Button>
+
+      {walletAddress && (
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+          Connected: {walletAddress}
+        </Typography>
+      )}
+
+      {number !== null && (
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Stored Number: {number}
+        </Typography>
+      )}
+
+      <Box sx={{ mb: 2 }}>
+        <input
+          type="number"
+          placeholder="New number"
+          value={inputNumber}
+          onChange={(e) => setInputNumber(e.target.value)}
+          style={{ padding: '10px', marginRight: '10px' }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={setNewNumber}
+          disabled={!inputNumber || !walletAddress}
+        >
+          Set Number
+        </Button>
+      </Box>
+    </Box>
   );
 }
 
