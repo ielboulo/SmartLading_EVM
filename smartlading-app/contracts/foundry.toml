@@ -2,5 +2,8 @@
 src = "src"
 out = "out"
 libs = ["lib"]
+solc_version = "0.8.19"  # Your contract's Solidity version
+optimizer = true
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+[rpc_endpoints]
+anvil = "http://127.0.0.1:8545"  # Default local Anvil RPC endpoint
