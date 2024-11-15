@@ -1,0 +1,3 @@
+[submodule "smartlading-app/contracts/lib/forge-std"]
+	path = smartlading-app/contracts/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
