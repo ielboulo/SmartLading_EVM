@@ -30,8 +30,8 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
-  const { contract, contract_write, account, isConnected } = useWeb3(); // IEL 
-  console.log("contract : ", contract?.target, " isConnected ", isConnected, "contract_write ",contract_write?.target ); 
+  const { contract,contract_write, account, isConnected } = useWeb3(); // IEL 
+  console.log("contract : ", contract?.address, " isConnected ", isConnected ); 
 
   useEffect(() => {
     const getDocCount = async () => {
@@ -85,7 +85,7 @@ export default function Register() {
         const documentHash = generateDocumentHash(formData);
 
         // 3. Convert BOL number to BigNumber
-        const bolNumber = ethers.parseUnits(formData.billOfLadingNumber, 0);
+        const bolNumber = ethers.utils.parseUnits(formData.billOfLadingNumber, 0); // ethers.utils.parseUnits
         
         // 4. Prepare transaction parameters
         const txParams = [
@@ -95,7 +95,7 @@ export default function Register() {
           shipDateTimestamp,                  // _shipDate
           formData.carrier,                   // _carrier
           formData.cargo,                     // _cargoContent
-          ethers.parseUnits(formData.valueUsd.toString(), 0), // _valueUSD
+          ethers.utils.parseUnits(formData.valueUsd.toString(), 0), // _valueUSD
           documentHash                        // _documentHash
         ];
 

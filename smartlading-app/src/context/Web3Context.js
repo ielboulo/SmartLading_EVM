@@ -1,122 +1,122 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ethers } from 'ethers';
 import { contractAddress, contractABI } from '../config/contract';
 
 import * as sapphire from '@oasisprotocol/sapphire-paratime';
 
+const ethers = require('ethers');
+
 const Web3Context = createContext(null);
 
-export const Web3Provider = ({ children }) => {
+export const Web3ContextProvider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
-  const [contract_write, setContractWrite] = useState(null);
+  const [contract_write, setContractW] = useState(null);
 
   const [account, setAccount] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  console.log("ilham here ..... 0");
+
   const connectWallet = async () => {
+    console.log("ilham here ..... 1");
+
     try {
       if (!window.ethereum) {
-        throw new Error("Please install MetaMask");
+        console.error('MetaMask is not installed');
+        throw new Error('MetaMask is not installed. Please install it to use this app.');
       }
+
       setIsLoading(true);
 
-      // Use BrowserProvider with window.ethereum instead of JsonRpcProvider
-      //const provider_ = new ethers.BrowserProvider(window.ethereum);
-      
-      const provider_old = new ethers.BrowserProvider(window.ethereum);
-      console.log("provider_old = ", provider_old);
-      // IEL : with sapphire 
-      const provider = sapphire.wrap(new ethers.BrowserProvider(window.ethereum));
-      console.log("provider_new = ", provider_old);
+      console.log("ilham here ..... 2");
+      // Initialize provider
+      const web3Provider = sapphire.wrap(new ethers.providers.Web3Provider(window.ethereum));
 
-      // Request accounts first
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      
-      // Then get the signer
-      const signer = await provider.getSigner();
-      console.log("Connected wallet address:", accounts[0]);
-      console.log("Signer address:", await signer.getAddress());
+      console.log("ilham here ..... 3 - Provider initialized");
+      await web3Provider.send('eth_requestAccounts', []);
 
-      // Verify the addresses match
+      console.log("ilham here ..... 4 - Accounts requested");
+      const signer = web3Provider.getSigner();
       const signerAddress = await signer.getAddress();
+      console.log("ilham here ..... 5 - Signer address:", signerAddress);
+
+      const accounts = await web3Provider.listAccounts();
+      console.log("ilham here ..... 6 - Accounts list:", accounts);
+
       if (signerAddress.toLowerCase() !== accounts[0].toLowerCase()) {
-        throw new Error("Signer and selected account mismatch");
+        console.error('Signer and account mismatch');
+        throw new Error('Mismatch between signer and selected account.');
       }
-      console.log( "sapphire contract = here we are jj !!!!! "); 
 
-      console.log( "old contract = ", new ethers.Contract(contractAddress, contractABI, signer)); 
+      const contract = new ethers.Contract(contractAddress, contractABI, web3Provider); // read
+      const contract_write = new ethers.Contract(contractAddress, contractABI, web3Provider.getSigner()); // write
 
-      //const contract = new ethers.Contract(contractAddress, contractABI, signer);
-      // IEL : with sapphire 
-      // IEL : contract for eth_calls (read) 
-      contract = new ethers.Contract(contractAddress, contractABI, provider);
-      console.log( "sapphire contract = ", contract); 
+      console.log("7 - Contract initialized contract", contract);
 
-
-      // IEL : contract_write for on-chain transactions
-
-      contract_write = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
-      console.log( "sapphire contract_write = ", contract_write); 
- 
-
-      setProvider(provider);
+      setProvider(web3Provider);
       setSigner(signer);
-      setContract(contract); // IEL 
-      setContractWrite(contract_write); // IEL 
+      setContract(contract);
+      setContractW(contract_write);
+
       setAccount(accounts[0]);
       setIsConnected(true);
       setError(null);
+      console.log("ilham here ..... 8 - Wallet connected successfully");
     } catch (err) {
-      console.error("Wallet connection error:", err);
+      console.error('Error connecting wallet:', err.message);
       setError(err.message);
       setIsConnected(false);
     } finally {
       setIsLoading(false);
+      console.log("ilham here ..... 9 - connectWallet finished");
     }
   };
 
   const disconnectWallet = () => {
+    console.log("ilham here ..... Disconnecting wallet");
     setProvider(null);
     setSigner(null);
-    setContract(null); // IEL 
-    setContractWrite(null); // IEL
+    setContract(null);
+    setContractW(null);
+
     setAccount(null);
     setIsConnected(false);
   };
 
-  // Handle account changes
   useEffect(() => {
+    console.log("ilham here ..... Setting up Ethereum listeners");
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', (accounts) => {
+      const handleAccountsChanged = (accounts) => {
+        console.log("ilham here ..... Accounts changed:", accounts);
         if (accounts.length > 0) {
           setAccount(accounts[0]);
           connectWallet();
         } else {
           disconnectWallet();
         }
-      });
+      };
 
-      window.ethereum.on('chainChanged', () => {
+      const handleChainChanged = () => {
+        console.log("ilham here ..... Chain changed");
         window.location.reload();
-      });
-    }
+      };
 
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', connectWallet);
-        window.ethereum.removeListener('chainChanged', () => {
-          window.location.reload();
-        });
-      }
-    };
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
+
+      return () => {
+        console.log("ilham here ..... Cleaning up listeners");
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      };
+    }
   }, []);
 
-  // Initial connection attempt
   useEffect(() => {
+    console.log("ilham here ..... Connecting wallet on mount");
     connectWallet();
   }, []);
 
@@ -130,20 +130,16 @@ export const Web3Provider = ({ children }) => {
     isLoading,
     error,
     connectWallet,
-    disconnectWallet
+    disconnectWallet,
   };
 
-  return (
-    <Web3Context.Provider value={value}>
-      {children}
-    </Web3Context.Provider>
-  );
+  return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
 };
 
 export const useWeb3 = () => {
   const context = useContext(Web3Context);
   if (!context) {
-    throw new Error('useWeb3 must be used within a Web3Provider');
+    throw new Error('useWeb3 must be used within a Web3ContextProvider');
   }
   return context;
 };

@@ -1,5 +1,5 @@
 const { ethers } = require('ethers');
-
+// Function to convert a date string to a Unix timestamp
 const convertDateToTimestamp = (dateStr) => {
     if (!dateStr) return 0;
     const [day, month, year] = dateStr.split('/').map(num => parseInt(num, 10));
@@ -15,6 +15,7 @@ const convertDateToTimestamp = (dateStr) => {
     return timestamp;
 };
 
+// Test date conversion functionality
 const testDateConversion = () => {
     const testDates = [
         '25/03/2024',
@@ -29,6 +30,7 @@ const testDateConversion = () => {
     });
 };
 
+// Function to generate a hash from document data
 const generateDocumentHash = (documentData) => {
     try {
         // Create a string from all document fields
@@ -43,13 +45,13 @@ const generateDocumentHash = (documentData) => {
             docMetadata: documentData.docMetadata
         });
 
-        // Using ethers v6 syntax for encoding and hashing
-        const messageBytes = ethers.toUtf8Bytes(documentString);
-        const hash = ethers.keccak256(messageBytes);
-        
+        // Convert the string to bytes and generate the keccak256 hash (v5 syntax)
+        const messageBytes = ethers.utils.toUtf8Bytes(documentString);
+        const hash = ethers.utils.keccak256(messageBytes);
+
         console.log('Document string:', documentString);
         console.log('Generated hash:', hash);
-        
+
         return hash;
     } catch (error) {
         console.error('Error generating document hash:', error);

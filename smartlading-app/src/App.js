@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Box } from '@mui/material';
 
-import { Web3Provider } from './context/Web3Context';
+import { Web3ContextProvider, useWeb3 } from './context/Web3Context';
 
 // Import components
 import SideBar from './components/SideBar';
@@ -50,14 +50,14 @@ const MainAppLayout = () => {
 
 function App() {
   return (
-    <Web3Provider>
+    <Web3ContextProvider>
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/app/*" element={<MainAppLayout />} />
       </Routes>
     </Router>
-    </Web3Provider>
+    </Web3ContextProvider>
   );
 }
 
