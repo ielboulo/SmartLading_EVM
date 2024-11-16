@@ -13,6 +13,9 @@ import BillOfLadingDetails from './components/BillOfLadingDetails';
 import TransferOwnership from './components/TransferOwnership';
 import VerifyDoc from './components/VerifyDoc';
 
+import welcomeImage from './asset/smartlading_home.png';
+
+
 function App() {
   return (
     <Router>
@@ -30,7 +33,6 @@ function App() {
             }}
           >
             <Routes>
-              <Route path="/" element={<Initialize />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/bill-of-lading/:bolNumber" element={<BillOfLadingDetails />} />
               <Route path="/register" element={<Register />} />
@@ -38,6 +40,12 @@ function App() {
               <Route path="/bl-details" element={<BillOfLadingDetails />} />
               <Route path="/transfer" element={<TransferOwnership />} />
               <Route path="/verify" element={<VerifyDoc />} />
+
+              <Route path="/" element={<div>  
+                              <h1>Welcome to SmartLading Platform</h1>
+                              <img src={welcomeImage} alt="Welcome" style={{ width: '90%',  height: '600px' }} />
+                              <Dashboard />
+                              </div>} />
             </Routes>
           </Box>
         </Box>

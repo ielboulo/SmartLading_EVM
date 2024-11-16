@@ -25,6 +25,13 @@ import { styled } from '@mui/material/styles';
 import filledBOL from '../asset/Bill_of_Lading_examples/Bill_of_Lading_filled.png';
 import emptyBOL from '../asset/Bill_of_Lading_examples/Bill_of_Lading_empty.png';
 
+import { Card, CardContent, CardHeader, Stack} from '@mui/material';
+  import { 
+    SwapHoriz as TransferIcon, 
+    Update as UpdateIcon 
+  } from '@mui/icons-material';
+import TimelineStatus from './TimelineStatus';
+
 // Styled components for the vertical timeline
 const VerticalTimelineConnector = styled(TimelineConnector)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -94,38 +101,44 @@ const BillOfLadingDetails = () => {
           />
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="h6">Current Owner: {blData.owner}</Typography>
-          <Typography variant="h6">Current Status: {blData.status}</Typography>
-        </Box>
+        <Card>
+          <CardHeader
+            title={`BOL Owner: ${blData.owner}`}
+            subheader={`Current Status: ${blData.status}`}
+            />
+            <CardContent>
+            <TimelineStatus statusHistory={blData.statusHistory} />
+          </CardContent>
+        </Card>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button variant="contained" color="primary" onClick={handleSendToNewOwner}>
-            Send to New Owner
-          </Button>
-          <Button variant="contained" color="secondary" onClick={handleUpdateStatus}>
-            Update Status
-          </Button>
-        </Box>
-
-        <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-          Status Timeline
-        </Typography>
-
-        <Timeline>
-          {blData.statusHistory.map((item, index) => (
-            <TimelineItem key={index}>
-              <TimelineSeparator>
-                <TimelineDot color="primary" />
-                {index < blData.statusHistory.length - 1 && <VerticalTimelineConnector />}
-              </TimelineSeparator>
-              <TimelineContent>
-                <Typography variant="body2">{item.status}</Typography>
-                <Typography variant="caption">{item.date}</Typography>
-              </TimelineContent>
-            </TimelineItem>
-          ))}
-        </Timeline>
+        <Card elevation={3} sx={{ p: 2 }}>
+          <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          sx={{ px: 2 }}
+          >
+            <Button
+            variant="contained"
+            color="primary"
+            startIcon={<TransferIcon />}
+            onClick={handleSendToNewOwner}
+            fullWidth
+            sx={{ py: 1.5 }}
+            >
+              Transfer Ownership
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<UpdateIcon />}
+              onClick={handleUpdateStatus}
+              fullWidth
+              sx={{ py: 1.5 }}
+              >
+              Update Status
+            </Button>
+          </Stack>
+        </Card>
 
         <Button variant="outlined" onClick={() => navigate('/dashboard')} sx={{ mt: 3 }}>
           Back to Dashboard
