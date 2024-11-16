@@ -1,9 +1,16 @@
 import React from 'react';
 import { Ship, Shield, Boxes, Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate('/app/dashboard');
+  };
 
   return (
     <nav className="fixed w-full bg-white/90 backdrop-blur-sm z-50 border-b border-gray-100">
@@ -18,8 +25,10 @@ export default function Navbar() {
             <a href="#features" className="text-gray-600 hover:text-blue-600">Features</a>
             <a href="#technology" className="text-gray-600 hover:text-blue-600">Technology</a>
             <a href="#benefits" className="text-gray-600 hover:text-blue-600">Benefits</a>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              Get Started
+            <button
+            onClick={handleGetStarted}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            Get Started
             </button>
           </div>
 
@@ -37,8 +46,11 @@ export default function Navbar() {
             <a href="#features" className="block px-3 py-2 text-gray-600">Features</a>
             <a href="#technology" className="block px-3 py-2 text-gray-600">Technology</a>
             <a href="#benefits" className="block px-3 py-2 text-gray-600">Benefits</a>
-            <button className="w-full text-left px-3 py-2 bg-blue-600 text-white rounded-lg">
-              Get Started
+
+            <button
+            onClick={handleGetStarted}
+            className="w-full text-left px-3 py-2 bg-blue-600 text-white rounded-lg">
+            Get Started 2
             </button>
           </div>
         </div>
