@@ -19,7 +19,10 @@ Deployed at (using remix) : 0xb08E2D65eD8609675E19284724ae87269039Cd5b
 Tx hash : 0xb4b113ab8948b24613e0d8fb8c9547b81e8facd21c01610c30ae7faa7f4ea845
 
 https://explorer.testnet.zircuit.com/address/0xCA7f54D97a97eF80d46d021d4559B08726a7061c
+https://explorer.testnet.zircuit.com/address/0xb08E2D65eD8609675E19284724ae87269039Cd5b
 
+Verified contract here : 
+https://explorer.testnet.zircuit.com/address/0xb08E2D65eD8609675E19284724ae87269039Cd5b?activeTab=3
 
 # Getting Started with Create React App
 
