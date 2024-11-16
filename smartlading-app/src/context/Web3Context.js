@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { contractAddress, contractABI } from '../config/contract';
 
 import * as sapphire from '@oasisprotocol/sapphire-paratime';
+import { wrapEthersProvider } from '@oasisprotocol/sapphire-paratime';
 
 const ethers = require('ethers');
 
@@ -33,7 +34,7 @@ export const Web3ContextProvider = ({ children }) => {
 
       console.log("ilham here ..... 2");
       // Initialize provider
-      const web3Provider = sapphire.wrap(new ethers.providers.Web3Provider(window.ethereum));
+      const web3Provider = new ethers.providers.Web3Provider(wrapEthersProvider(window.ethereum)); //sapphire.wrap(new ethers.providers.Web3Provider(window.ethereum));
 
       console.log("ilham here ..... 3 - Provider initialized");
       await web3Provider.send('eth_requestAccounts', []);
@@ -51,8 +52,12 @@ export const Web3ContextProvider = ({ children }) => {
         throw new Error('Mismatch between signer and selected account.');
       }
 
+      const signerW = sapphire.wrap(
+        new ethers.providers.Web3Provider(window.ethereum).getSigner(),
+      );
       const contract = new ethers.Contract(contractAddress, contractABI, web3Provider); // read
-      const contract_write = new ethers.Contract(contractAddress, contractABI, web3Provider.getSigner()); // write
+      //const contract_write = new ethers.Contract(contractAddress, contractABI, web3Provider.getSigner()); // write
+      const contract_write = new ethers.Contract(contractAddress, contractABI,signerW);
 
       console.log("7 - Contract initialized contract", contract);
 
