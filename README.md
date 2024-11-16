@@ -15,18 +15,10 @@ SmartLading is a platform providing  those key features :
 
 The platform aims to reduce processing time for bills of lading from 17 hours to just 14 minutes, representing a 120-fold improvement in efficiency.
 
-
-# About the founder :
-Ilham is the founder of SmartLading and CEO of DataChainEd, a Blockchain Consultancy Company. With over 10 years of experience as a software engineer and 6 years as a Team/Project Manager in an Agile and international environment, Ilham is passionate about Web3 technologies and believes in the potential of blockchain to transform businesses and provide secure and efficient products for enterprises.
-
-The idea for SmartLading was born in April 2024 after meeting a client in the maritime transport sector who was seeking a blockchain solution for managing bills of lading. This sparked interest and research into the maritime transport domain and the digitalization of bills of lading.
-
-Ilham believes in the power of blockchain to propel the maritime industry into a new era, and she's committed to contributing to this new dynamic through the SmartLading startup.
-
 # Main Key Features of the platform
 ## Digitalization of the Bill of Lading, powered by AI:
 In order to ensure a smooth transition from paper-based to a digital version of the Bill of Lading, we provide to the users to digitize the document either by filling in a form manually or by using AI to extract automatically the needed fields from an image or a pdf version of it. 
-Using AI allows faster operation and reduces the source of human error.
+Using AI allows faster operation and reduces the source of human error. The Claude.ai LLM has been used via API in order to extract data automaically from digital files (pdf, image)
 
 Once this step is done, a hash is generate to authenticate the version of the bill of lading. This cryptographic operation allows the users to verify if a Bill of Lading is exisiting in their database and whether the filled attributes are compliant.
 
@@ -35,7 +27,6 @@ Once this step is done, a hash is generate to authenticate the version of the bi
 From the dashboard, the user can have a visual access to the list of Bill of Lading :
 - the user can see the latest info of the cargo shipments as well as have access to some operations on the bill of lading like transferring the ownership ar updating the status
 - the user have also a map where he can locate the Cargo
-
 
 <img width="211" alt="Screenshot 2024-11-17 at 02 46 53" src="https://github.com/user-attachments/assets/dd6f44d4-bf09-4ebc-83dc-1805e600bee6">
 <img width="1433" alt="Screenshot 2024-11-17 at 02 57 16" src="https://github.com/user-attachments/assets/32922648-aec3-4836-9b27-8103d0aaa038">
@@ -46,6 +37,12 @@ From the dashboard, the user can have a visual access to the list of Bill of Lad
 # Main Smart Contract functions :
 Here are the main functions in the SmartLading smart contract. These functions provide the core functionality for managing bill of lading documents on the blockchain, including creation, verification, ownership transfer, and status updates.
 
+# About the founder :
+Ilham is the founder of SmartLading and CEO of DataChainEd, a Blockchain Consultancy Company. With over 10 years of experience as a software engineer and 6 years as a Team/Project Manager in an Agile and international environment, Ilham is passionate about Web3 technologies and believes in the potential of blockchain to transform businesses and provide secure and efficient products for enterprises.
+
+The idea for SmartLading was born in April 2024 after meeting a client in the maritime transport sector who was seeking a blockchain solution for managing bills of lading. This sparked interest and research into the maritime transport domain and the digitalization of bills of lading.
+
+Ilham believes in the power of blockchain to propel the maritime industry into a new era, and she's committed to contributing to this new dynamic through the SmartLading startup.
 
 # Deployments 
 ## Linea Sepolia :
