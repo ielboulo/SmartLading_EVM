@@ -44,6 +44,48 @@ From the dashboard, the user can have a visual access to the list of Bill of Lad
 Here are the main functions in the SmartLading smart contract. These functions provide the core functionality for managing bill of lading documents on the blockchain, including creation, verification, ownership transfer, and status updates.
 
 
+# Deployments 
+## Linea Sepolia :
+
+✅  [Success] Hash: 0xcf778f5eae31c1f08b639c3782c060aced1067fcbce1526ebdca98263a657df7
+Contract Address: 0x39208e0d07181a2cF8b48e087B4573FF0bc03974
+Block: 5923645
+Paid: 0.00007004675421084 ETH (946968 gas * 0.073969505 gwei)
+
+✅ Sequence #1 on linea-sepolia | Total Paid: 0.00007004675421084 ETH (946968 gas * avg 0.073969505 gwei)
+                                                                                                                                    
+Transaction : storeDocumentHash() 
+https://sepolia.lineascan.build/address/0xca7f54d97a97ef80d46d021d4559b08726a7061c
+
+
+## Zircuit Testnet 
+
+Deployed at (using remix) : 0xb08E2D65eD8609675E19284724ae87269039Cd5b 
+Tx hash : 0xb4b113ab8948b24613e0d8fb8c9547b81e8facd21c01610c30ae7faa7f4ea845
+
+https://explorer.testnet.zircuit.com/address/0xCA7f54D97a97eF80d46d021d4559B08726a7061c
+https://explorer.testnet.zircuit.com/address/0xb08E2D65eD8609675E19284724ae87269039Cd5b
+
+Verified contract here : 
+https://explorer.testnet.zircuit.com/address/0xb08E2D65eD8609675E19284724ae87269039Cd5b?activeTab=3
+
+
+## Scroll Sepolia
+✅  [Success] Hash: 0x776578f407132f58967bf1ea5abe4955e77b8d4aac4d9d401b9cc4a919ae62ce
+Contract Address: 0xb08E2D65eD8609675E19284724ae87269039Cd5b
+Block: 7306445
+Paid: 0.02748762676698605 ETH (947230 gas * 29.018957135 gwei)
+
+✅ Sequence #1 on scroll-sepolia | Total Paid: 0.02748762676698605 ETH (947230 gas * avg 29.018957135 gwei)
+
+Transactions on the smart contract : https://sepolia.scrollscan.com/address/0xb08E2D65eD8609675E19284724ae87269039Cd5b
+
+## Oasis Protocol - Sapphire 
+✅  Please Refer to the branch for more details about the code changes : "smartLading_oasisProtocol"
+With the support of Oasis Protocol team, we succeeded in encrypting the on-chain transactions by wrapping provider + signer leveraging Sapphire library ( Metamask + Ethers v5) :
+
+https://explorer.oasis.io/testnet/sapphire/address/0x14dC79964da2C08b23698B3D3cc7Ca32193d9955
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
