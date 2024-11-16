@@ -30,8 +30,8 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
-  const { contract, account, isConnected } = useWeb3();
-  console.log("contract : ", contract?.target, " isConnected ", isConnected); 
+  const { contract, contract_write, account, isConnected } = useWeb3(); // IEL 
+  console.log("contract : ", contract?.target, " isConnected ", isConnected, "contract_write ",contract_write?.target ); 
 
   useEffect(() => {
     const getDocCount = async () => {
@@ -102,7 +102,7 @@ export default function Register() {
         console.log('Sending transaction with params:', txParams);
 
         // 5. Call smart contract function
-        const tx = await contract.storeDocumentHash(...txParams);
+        const tx = await contract_write.storeDocumentHash(...txParams);
         console.log('Transaction sent:', tx.hash);
 
         // 6. Wait for transaction confirmation
