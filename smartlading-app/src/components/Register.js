@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   TextField,
   Button,
@@ -31,22 +31,6 @@ export default function Register() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
   const { contract, account, isConnected } = useWeb3();
-  console.log("contract : ", contract?.target, " isConnected ", isConnected); 
-
-  useEffect(() => {
-    const getDocCount = async () => {
-      if (contract && isConnected) {
-        try {
-          const count = await contract.getDocumentCount();
-          console.log('Number of documents stored:', count.toString());
-        } catch (error) {
-          console.error('Error getting document count:', error);
-        }
-      }
-    };
-
-    getDocCount();
-  }, [contract, isConnected]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,51 +53,80 @@ export default function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const downloadCSV = (data, documentHash, txHash) => {
+    // Convert date to readable format
+    const formattedDate = new Date(data.shipDate).toLocaleDateString('en-GB');
+    
+    // Create CSV headers
+    const headers = [
+      'Bill of Lading Number',
+      'Ship From',
+      'Ship To',
+      'Ship Date',
+      'Carrier',
+      'Cargo',
+      'Value USD',
+      'Metadata',
+      'Document Hash',
+      'Transaction Hash',
+      'Timestamp'
+    ].join(',');
+
+    // Create CSV row
+    const row = [
+      data.billOfLadingNumber,
+      `"${data.shipFrom}"`,  // Wrap in quotes to handle commas in text
+      `"${data.shipTo}"`,
+      formattedDate,
+      `"${data.carrier}"`,
+      `"${data.cargo}"`,
+      data.valueUsd,
+      `"${data.docMetadata}"`,
+      documentHash,
+      txHash,
+      new Date().toISOString()
+    ].join(',');
+
+    // Combine headers and row
+    const csvContent = `${headers}\n${row}`;
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    // Format filename with date
+    const filename = `bol_${data.billOfLadingNumber}_${formattedDate.replace(/\//g, '-')}.csv`;
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url); // Clean up
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       setIsLoading(true);
       try {
-        // 1. Convert date to timestamp
-        const dateStr = new Date(formData.shipDate).toLocaleDateString('en-GB'); // Convert to dd/mm/yyyy
-        const shipDateTimestamp = convertDateToTimestamp(dateStr);
-        if (shipDateTimestamp === 0) {
-          throw new Error('Invalid date format');
-        }
-
-        // 2. Generate document hash
+        // Generate document hash
         const documentHash = generateDocumentHash(formData);
 
-        // 3. Convert BOL number to BigNumber
+        // Convert BOL number to BigNumber
         const bolNumber = ethers.parseUnits(formData.billOfLadingNumber, 0);
         
-        // 4. Prepare transaction parameters
-        const txParams = [
-          bolNumber,                          // _bolNumber
-          formData.shipFrom,                  // _shipFrom
-          formData.shipTo,                    // _shipTo
-          shipDateTimestamp,                  // _shipDate
-          formData.carrier,                   // _carrier
-          formData.cargo,                     // _cargoContent
-          ethers.parseUnits(formData.valueUsd.toString(), 0), // _valueUSD
-          documentHash                        // _documentHash
-        ];
-
-        console.log('Sending transaction with params:', txParams);
-
-        // 5. Call smart contract function
-        const tx = await contract.storeDocumentHash(...txParams);
+        // Store only BOL number and hash on blockchain
+        const tx = await contract.storeDocumentHash(bolNumber, documentHash);
         console.log('Transaction sent:', tx.hash);
 
-        // 6. Wait for transaction confirmation
+        // Wait for transaction confirmation
         const receipt = await tx.wait();
         console.log('Transaction confirmed:', receipt);
 
-        // 7. Check for events
-        const event = receipt.logs.find(log => log.eventName === 'DocumentStored');
-        if (event) {
-          console.log('Document stored successfully. BOL Number:', event.args[0].toString());
-        }
+        // Download CSV file with transaction data
+        downloadCSV(formData, documentHash, tx.hash);// tx.hash);
 
         setSnackbar({
           open: true,

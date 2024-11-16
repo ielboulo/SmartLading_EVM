@@ -47,6 +47,26 @@ contract BillOfLading {
         _;
     }
 
+    // Store new document hash - more private version
+    function storeDocumentHash(
+        uint256 _bolNumber,
+        bytes32 _documentHash
+    ) public returns (bool) {
+        require(!documents[_bolNumber].exists, "Document already exists");
+        
+        Document storage doc = documents[_bolNumber];
+        doc.bolNumber = _bolNumber;
+        doc.documentHash = _documentHash;
+        doc.status = DocumentStatus.Created;
+        doc.owner = msg.sender;
+        doc.exists = true;
+
+        documentCount++;
+        
+        emit DocumentStored(_bolNumber, msg.sender, _documentHash);
+        return true;
+    }
+
     // Store new document hash
     function storeDocumentHash(
         uint256 _bolNumber,

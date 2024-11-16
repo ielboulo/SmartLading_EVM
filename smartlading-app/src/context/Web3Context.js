@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ethers } from 'ethers';
+//import { ethers } from 'ethers';
+
 import { contractAddress, contractABI } from '../config/contract';
+
+const ethers = require('ethers');
 
 const Web3Context = createContext(null);
 
