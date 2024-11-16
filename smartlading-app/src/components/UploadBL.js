@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import Anthropic from '@anthropic-ai/sdk';
-import BN from 'bn.js';
-import { PublicKey } from '@solana/web3.js';
-
 import {
   TextField,
   Button,
@@ -19,9 +16,6 @@ import {
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
-import idl from '../idl/smart_lading.json'; // Ensure this path is correct
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -35,9 +29,6 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-// Replace with your program ID
-const programID = new web3.PublicKey("1gKYDP38tQow2WAiHtUomBQYAoSNdQveeASvRG38ANt");
-
 const UploadBL = () => {
   const [file, setFile] = useState(null);
   const [extractedData, setExtractedData] = useState(null);
@@ -47,8 +38,6 @@ const UploadBL = () => {
   const [showForm, setShowForm] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
-  const { connection } = useConnection();
-  const wallet = useWallet();
 
   const anthropic = new Anthropic({
     apiKey: process.env.REACT_APP_ANTHROPIC_API_KEY,
@@ -136,7 +125,7 @@ const UploadBL = () => {
     "owner": "admin"
   }
   
-  Please ensure that all fields are present in the JSON response, even if the information is not available in the image. In such cases, use "N/A" for string fields. The response should be a valid JSON object without any additional text or explanations.`
+  Please ensure that all fields are present in the JSON response, even if the information is not available in the image. In such cases, use "N/A" for string fields.`
             },
             {
               type: "image",
@@ -177,59 +166,33 @@ const UploadBL = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await _storeDocument(editableData);
-      setSnackbar({ open: true, message: 'Document stored successfully on Solana!', severity: 'success' });
+      // Placeholder for Ethereum contract interaction
+      console.log("Document data to be stored:", editableData);
+      
+      // TODO: Add Ethereum contract interaction here
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating contract interaction
+      
+      setSnackbar({ 
+        open: true, 
+        message: 'Document registered successfully!', 
+        severity: 'success' 
+      });
     } catch (error) {
       console.error("Error storing document:", error);
-      setSnackbar({ open: true, message: 'Failed to store document. Please try again.', severity: 'error' });
+      setSnackbar({ 
+        open: true, 
+        message: 'Failed to store document. Please try again.', 
+        severity: 'error' 
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const _storeDocument = async (data) => {
-    if (!wallet.publicKey) {
-      throw new Error('Wallet not connected');
-    }
-
-    const provider = new AnchorProvider(connection, wallet, {});
-    const program = new Program(idl, programID, provider);
-    const [globalStateAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from("global_state")],
-      program.programId
-    );
-
-    const [documentAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from("document"), Buffer.from(data.billOfLadingNumber)],
-      program.programId
-    );
-
-    try {
-      const tx = await program.methods.storeDocument(
-        data.billOfLadingNumber,
-        data.shipFrom,
-        data.shipTo,
-        new BN(Math.floor(new Date(data.shipDate).getTime() / 1000)), // Unix timestamp
-        data.carrierName,
-        data.cargo,
-        new BN(12345), // Convert to cents
-        data.specialInstructions,
-        wallet.publicKey // owner
-        )
-        .accounts({
-          document: documentAccount,
-          globalState: globalStateAccount,
-          issuer: wallet.publicKey,
-          systemProgram: web3.SystemProgram.programId,
-        })
-        .rpc();
-
-      console.log("Transaction signature", tx);
-    } catch (error) {
-      console.error("Error calling storeDocument:", error);
-      throw error;
-    }
-  };
+  // Check for MetaMask
+  if (!window.ethereum) {
+    return <Typography>Please install MetaMask to continue.</Typography>;
+  }
 
   return (
     <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
@@ -395,7 +358,7 @@ const UploadBL = () => {
               color="primary"
               fullWidth
               sx={{ marginTop: 2 }}
-              disabled={isLoading || !wallet.publicKey}
+              disabled={isLoading}
             >
               {isLoading ? <CircularProgress size={24} /> : 'Register Bill of Lading'}
             </Button>

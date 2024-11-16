@@ -1,9 +1,4 @@
 import React, { useState } from 'react';
-import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
-import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
-import { PublicKey } from '@solana/web3.js';
-import BN from 'bn.js';
-import idl from '../idl/smart_lading.json'; // Ensure this path is correct
 import {
   TextField,
   Button,
@@ -13,12 +8,8 @@ import {
   Box,
   CircularProgress,
   Snackbar,
-  Alert,
-  MenuItem
+  Alert
 } from '@mui/material';
-
-// Replace with your program ID
-const programID = new PublicKey("1gKYDP38tQow2WAiHtUomBQYAoSNdQveeASvRG38ANt");
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -35,28 +26,6 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
-
-  const wallet = useAnchorWallet();
-  if (wallet) {
-    const walletAddress = wallet.publicKey.toString();
-    console.log("Wallet address:", walletAddress);
-  } else {
-    console.log("Wallet not connected");
-  }
-  const { connection } = useConnection();
-
-  console.log("connection = ", connection); 
-
-  const provider = new AnchorProvider(connection, wallet, {
-    commitment: "confirmed",
-  });
-  console.log("provider ", provider);
-  console.log("programID ", programID.toString());
-  console.log("idl ", idl);
-
-  const program = new Program(idl, programID, provider);
-  console.log("Program object:", program);
-  console.log("Available methods:", Object.keys(program.methods));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -84,65 +53,22 @@ export default function Register() {
     if (validateForm()) {
       setIsLoading(true);
       try {
-        const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
-        const program = new Program(idl, programID, provider);
-
-        console.log("Program object:", program);
-        console.log("Available methods:", Object.keys(program.methods));
-
-
-        const [globalStateAccount] = PublicKey.findProgramAddressSync(
-          [Buffer.from("global_state")],
-          program.programId
-        );
-
-        const [documentAccount] = PublicKey.findProgramAddressSync(
-          [Buffer.from("document"), Buffer.from(formData.billOfLadingNumber)],
-          program.programId
-        );
-
-        /** bill_of_lading_number: String,
-        ship_from: String,
-        ship_to: String,
-        ship_date: i64,
-        carrier: String,
-        cargo: String,
-        value_usd: u64,
-        doc_metadata: String,
-        owner: Pubkey, */
-
-        console.log("Submitting document with data:", {
+        // Placeholder for Ethereum contract interaction
+        console.log("Form data to be sent to smart contract:", {
           billOfLadingNumber: formData.billOfLadingNumber,
           shipFrom: formData.shipFrom,
           shipTo: formData.shipTo,
-          shipDate: new BN(Math.floor(new Date(formData.shipDate).getTime() / 1000)).toString(),
+          shipDate: new Date(formData.shipDate).getTime(),
           carrier: formData.carrier,
           cargo: formData.cargo,
-          valueUsd: new BN(Math.floor(parseFloat(formData.valueUsd) * 100)).toString(),
+          valueUsd: parseFloat(formData.valueUsd),
           docMetadata: formData.docMetadata,
-          owner: wallet.publicKey.toString()
         });
 
-          await program.methods.storeDocument(
-            formData.billOfLadingNumber,
-            formData.shipFrom,
-            formData.shipTo,
-            new BN(Math.floor(new Date(formData.shipDate).getTime() / 1000)), // Unix timestamp
-            formData.carrier,
-            formData.cargo,
-            new BN(Math.floor(parseFloat(formData.valueUsd) * 100)), // Convert to cents
-            formData.docMetadata,
-            wallet.publicKey // owner
-          )
-          .accounts({
-            document: documentAccount,
-            globalState: globalStateAccount,
-            issuer: wallet.publicKey,
-            systemProgram: web3.SystemProgram.programId,
-          })
-          .rpc();
+        // TODO: Add Ethereum contract interaction here
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating contract interaction
 
-        setSnackbar({ open: true, message: 'Document stored successfully!', severity: 'success' });
+        setSnackbar({ open: true, message: 'Document registered successfully!', severity: 'success' });
         // Reset form
         setFormData({
           billOfLadingNumber: '',
@@ -155,7 +81,7 @@ export default function Register() {
           docMetadata: '',
         });
       } catch (error) {
-        console.error("Error storing document:", error);
+        console.error("Error registering document:", error);
         setSnackbar({ open: true, message: `Error: ${error.message}`, severity: 'error' });
       } finally {
         setIsLoading(false);
@@ -163,8 +89,9 @@ export default function Register() {
     }
   };
 
-  if (!wallet) {
-    return <Typography>Please connect your wallet to continue.</Typography>;
+  // Check for wallet connection
+  if (!window.ethereum) {
+    return <Typography>Please install MetaMask to continue.</Typography>;
   }
 
   return (
@@ -259,6 +186,7 @@ export default function Register() {
               fullWidth
               label="Document Metadata"
               name="docMetadata"
+              multiline
               rows={4}
               value={formData.docMetadata}
               onChange={handleChange}
