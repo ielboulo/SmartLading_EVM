@@ -2,7 +2,7 @@
 //export const contractAddress = "0x0116686e2291dbd5e317f47fadbfb43b599786ef"; // simple storage deployment 
 // anvil local : 0xa5be5d6c5fe1f129bb9b4a192d410b51d125c22f551ece1a4824274c5def22f0
 
-export const contractAddress = "0xa5be5d6c5fe1f129bb9b4a192d410b51d125c22f551ece1a4824274c5def22f0";
+export const contractAddress = "0x0116686E2291dbd5e317F47faDBFb43B599786Ef";
 
 export const contractABI = [
   {

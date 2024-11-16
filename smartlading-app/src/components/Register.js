@@ -1,5 +1,4 @@
-import React, { useState , useEffect} from 'react';
-import { ethers } from 'ethers';  // Add this import
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -12,8 +11,10 @@ import {
   Alert
 } from '@mui/material';
 
-//IEL
-import { contractAddress, contractABI } from '../config/contract';
+// Import the Web3Context hook
+import { useWeb3 } from '../context/Web3Context';
+
+import '../utils/ContractUtils';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -31,96 +32,25 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
-  const [walletInfo, setWalletInfo] = useState({
-    address: null,
-    documentCount: null
-  });
+  // Get the Web3Context values
+  const { contract, account, isConnected } = useWeb3();
+console.log("contract : ", contract.target, " isConnected ", isConnected); 
 
-  // Add this after your state declarations
-useEffect(() => {
-  const testContractConnection = async () => {
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, contractABI, signer);
-      
-      const count = await contract.getDocumentCount();
-      console.log('Current document count:', count.toString());
-      console.log('Contract connected successfully at address:', contractAddress);
-    } catch (error) {
-      console.error('Contract connection error:', error);
-    }
-  };
-
-  testContractConnection();
-}, []);
-
-  // Function to get wallet and contract info
-  const getWalletInfo = async () => {
-    try {
-      // Get provider and accounts
-      //const provider = new ethers.BrowserProvider(window.ethereum);
-      const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545"); // Connect to Anvil network
-      const network = await provider.getNetwork();
-      console.log("IEL2 Connected to network:", network.chainId);
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      
-      // Get signer and contract
-      const signer = await provider.getSigner();
-      console.log("IEL2 signer:", signer.address);
-
-      const contract = new ethers.Contract(contractAddress, contractABI, signer);
-      
-      // Get document count
-      const count = await contract.getDocumentCount();
-
-      // Update state with wallet info
-      setWalletInfo({
-        address: accounts[0],
-        documentCount: count.toString()
-      });
-
-      // Log the information
-      console.log('Wallet Connected:', {
-        address: accounts[0],
-        documentCount: count.toString()
-      });
-
-    } catch (error) {
-      console.error('Error getting wallet info:', error);
-      setSnackbar({
-        open: true,
-        message: `Error connecting to wallet: ${error.message}`,
-        severity: 'error'
-      });
-    }
-  };
-
-  // Listen for account changes
+  // Effect to get document count when contract is available
   useEffect(() => {
-    if (window.ethereum) {
-      // Initial connection
-      getWalletInfo();
+    const getDocCount = async () => {
+      if (contract && isConnected) {
+        try {
+          const count = await contract.getDocumentCount();
+          console.log('Number of documents stored:', count.toString());
+        } catch (error) {
+          console.error('Error getting document count:', error);
+        }
+      }
+    };
 
-      // Listen for account changes
-      window.ethereum.on('accountsChanged', (accounts) => {
-        console.log('Account changed:', accounts[0]);
-        getWalletInfo();
-      });
-
-      // Listen for network changes
-      window.ethereum.on('chainChanged', (chainId) => {
-        console.log('Network changed:', chainId);
-        getWalletInfo();
-      });
-
-      // Cleanup
-      return () => {
-        window.ethereum.removeListener('accountsChanged', getWalletInfo);
-        window.ethereum.removeListener('chainChanged', getWalletInfo);
-      };
-    }
-  }, []);
+    getDocCount();
+  }, [contract, isConnected]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -148,7 +78,6 @@ useEffect(() => {
     if (validateForm()) {
       setIsLoading(true);
       try {
-        // Placeholder for Ethereum contract interaction
         console.log("Form data to be sent to smart contract:", {
           billOfLadingNumber: formData.billOfLadingNumber,
           shipFrom: formData.shipFrom,
@@ -160,11 +89,8 @@ useEffect(() => {
           docMetadata: formData.docMetadata,
         });
 
-        // TODO: Add Ethereum contract interaction here
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating contract interaction
-
+        await new Promise(resolve => setTimeout(resolve, 1000));
         setSnackbar({ open: true, message: 'Document registered successfully!', severity: 'success' });
-        // Reset form
         setFormData({
           billOfLadingNumber: '',
           shipFrom: '',
@@ -184,9 +110,8 @@ useEffect(() => {
     }
   };
 
-  // Check for wallet connection
-  if (!window.ethereum) {
-    return <Typography>Please install MetaMask to continue.</Typography>;
+  if (!isConnected) {
+    return <Typography>Please connect your MetaMask wallet to continue.</Typography>;
   }
 
   return (

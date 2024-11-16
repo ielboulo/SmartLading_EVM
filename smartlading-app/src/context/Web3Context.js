@@ -1,4 +1,3 @@
-// src/context/Web3Context.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { contractAddress, contractABI } from '../config/contract';
@@ -19,16 +18,25 @@ export const Web3Provider = ({ children }) => {
       if (!window.ethereum) {
         throw new Error("Please install MetaMask");
       }
-
       setIsLoading(true);
-      // Updated for ethers v6
-      //const provider = new ethers.BrowserProvider(window.ethereum);
-      const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545"); // Connect to Anvil network
-      const network = await provider.getNetwork();
-      console.log("IEL Connected to network:", network.chainId);
 
+      // Use BrowserProvider with window.ethereum instead of JsonRpcProvider
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      
+      // Request accounts first
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      
+      // Then get the signer
       const signer = await provider.getSigner();
+      console.log("Connected wallet address:", accounts[0]);
+      console.log("Signer address:", await signer.getAddress());
+
+      // Verify the addresses match
+      const signerAddress = await signer.getAddress();
+      if (signerAddress.toLowerCase() !== accounts[0].toLowerCase()) {
+        throw new Error("Signer and selected account mismatch");
+      }
+
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
       setProvider(provider);
@@ -38,6 +46,7 @@ export const Web3Provider = ({ children }) => {
       setIsConnected(true);
       setError(null);
     } catch (err) {
+      console.error("Wallet connection error:", err);
       setError(err.message);
       setIsConnected(false);
     } finally {
