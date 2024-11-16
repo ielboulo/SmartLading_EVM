@@ -1,7 +1,7 @@
 # SmartLading
 
 # Revolutionizing the Maritime Documentation
-<img width="778" alt="smartlading_home" src="https://github.com/user-attachments/assets/d10f0b0d-5bfa-48c3-8bcb-f52c2466128d">
+<img width="830" alt="Screenshot 2024-11-17 at 02 47 01" src="https://github.com/user-attachments/assets/1b0d2888-1749-4d6e-aac6-60fc77ae59af">
 
 SmartLading is an innovative blockchain-based platform designed to digitize and streamline the management of critical documents in maritime shipping, with a focus on the bill of lading document. 
 The mission is to revolutionize maritime documentation by leveraging blockchain and AI technologies to provide secure, faster, cost-effective, and scalable solutions for the global shipping industry, an industry that handles over 90% of global trade by volume.
@@ -36,9 +36,12 @@ From the dashboard, the user can have a visual access to the list of Bill of Lad
 - the user can see the latest info of the cargo shipments as well as have access to some operations on the bill of lading like transferring the ownership ar updating the status
 - the user have also a map where he can locate the Cargo
 
-<img width="1440" alt="Screenshot 2024-10-09 at 08 46 56" src="https://github.com/user-attachments/assets/3196a76d-fad8-440e-ad8c-3b4aa96cd1da">
-<img width="1422" alt="Screenshot 2024-10-09 at 09 02 55" src="https://github.com/user-attachments/assets/3ee632c7-4125-40b6-9e6d-fb99387c226b">
 
+<img width="211" alt="Screenshot 2024-11-17 at 02 46 53" src="https://github.com/user-attachments/assets/dd6f44d4-bf09-4ebc-83dc-1805e600bee6">
+<img width="1433" alt="Screenshot 2024-11-17 at 02 57 16" src="https://github.com/user-attachments/assets/32922648-aec3-4836-9b27-8103d0aaa038">
+<img width="1156" alt="Screenshot 2024-11-17 at 02 55 07" src="https://github.com/user-attachments/assets/d523285b-af04-41e0-afe8-06605bf5b9b5">
+<img width="785" alt="Screenshot 2024-11-16 at 09 04 31" src="https://github.com/user-attachments/assets/733ba3b6-3beb-46a2-915d-19956897de41">
+<img width="737" alt="Screenshot 2024-11-17 at 02 55 12" src="https://github.com/user-attachments/assets/2c58e42d-599c-4fa6-ae43-3d9a6a0e6cf3">
 
 # Main Smart Contract functions :
 Here are the main functions in the SmartLading smart contract. These functions provide the core functionality for managing bill of lading documents on the blockchain, including creation, verification, ownership transfer, and status updates.
@@ -60,13 +63,13 @@ https://sepolia.lineascan.build/address/0xca7f54d97a97ef80d46d021d4559b08726a706
 
 ## Zircuit Testnet 
 
-Deployed at (using remix) : 0xb08E2D65eD8609675E19284724ae87269039Cd5b 
+✅ Deployed at (using remix) : 0xb08E2D65eD8609675E19284724ae87269039Cd5b 
 Tx hash : 0xb4b113ab8948b24613e0d8fb8c9547b81e8facd21c01610c30ae7faa7f4ea845
 
 https://explorer.testnet.zircuit.com/address/0xCA7f54D97a97eF80d46d021d4559B08726a7061c
 https://explorer.testnet.zircuit.com/address/0xb08E2D65eD8609675E19284724ae87269039Cd5b
 
-Verified contract here : 
+✅ Verified contract here : 
 https://explorer.testnet.zircuit.com/address/0xb08E2D65eD8609675E19284724ae87269039Cd5b?activeTab=3
 
 
@@ -82,7 +85,8 @@ Transactions on the smart contract : https://sepolia.scrollscan.com/address/0xb0
 
 ## Oasis Protocol - Sapphire 
 ✅  Please Refer to the branch for more details about the code changes : "smartLading_oasisProtocol"
-With the support of Oasis Protocol team, we succeeded in encrypting the on-chain transactions by wrapping provider + signer leveraging Sapphire library ( Metamask + Ethers v5) :
+
+✅  With the support of Oasis Protocol team, we succeeded in encrypting the on-chain transactions by wrapping provider + signer leveraging Sapphire library ( Metamask + Ethers v5) :
 
 https://explorer.oasis.io/testnet/sapphire/address/0x14dC79964da2C08b23698B3D3cc7Ca32193d9955
 
