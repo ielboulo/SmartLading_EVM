@@ -10,11 +10,9 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-
-// Import the Web3Context hook
 import { useWeb3 } from '../context/Web3Context';
-
-import '../utils/ContractUtils';
+import { convertDateToTimestamp, generateDocumentHash } from '../utils/ContractUtils';
+import { ethers } from 'ethers';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -32,11 +30,9 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
-  // Get the Web3Context values
   const { contract, account, isConnected } = useWeb3();
-console.log("contract : ", contract.target, " isConnected ", isConnected); 
+  console.log("contract : ", contract?.target, " isConnected ", isConnected); 
 
-  // Effect to get document count when contract is available
   useEffect(() => {
     const getDocCount = async () => {
       if (contract && isConnected) {
@@ -78,19 +74,54 @@ console.log("contract : ", contract.target, " isConnected ", isConnected);
     if (validateForm()) {
       setIsLoading(true);
       try {
-        console.log("Form data to be sent to smart contract:", {
-          billOfLadingNumber: formData.billOfLadingNumber,
-          shipFrom: formData.shipFrom,
-          shipTo: formData.shipTo,
-          shipDate: new Date(formData.shipDate).getTime(),
-          carrier: formData.carrier,
-          cargo: formData.cargo,
-          valueUsd: parseFloat(formData.valueUsd),
-          docMetadata: formData.docMetadata,
+        // 1. Convert date to timestamp
+        const dateStr = new Date(formData.shipDate).toLocaleDateString('en-GB'); // Convert to dd/mm/yyyy
+        const shipDateTimestamp = convertDateToTimestamp(dateStr);
+        if (shipDateTimestamp === 0) {
+          throw new Error('Invalid date format');
+        }
+
+        // 2. Generate document hash
+        const documentHash = generateDocumentHash(formData);
+
+        // 3. Convert BOL number to BigNumber
+        const bolNumber = ethers.parseUnits(formData.billOfLadingNumber, 0);
+        
+        // 4. Prepare transaction parameters
+        const txParams = [
+          bolNumber,                          // _bolNumber
+          formData.shipFrom,                  // _shipFrom
+          formData.shipTo,                    // _shipTo
+          shipDateTimestamp,                  // _shipDate
+          formData.carrier,                   // _carrier
+          formData.cargo,                     // _cargoContent
+          ethers.parseUnits(formData.valueUsd.toString(), 0), // _valueUSD
+          documentHash                        // _documentHash
+        ];
+
+        console.log('Sending transaction with params:', txParams);
+
+        // 5. Call smart contract function
+        const tx = await contract.storeDocumentHash(...txParams);
+        console.log('Transaction sent:', tx.hash);
+
+        // 6. Wait for transaction confirmation
+        const receipt = await tx.wait();
+        console.log('Transaction confirmed:', receipt);
+
+        // 7. Check for events
+        const event = receipt.logs.find(log => log.eventName === 'DocumentStored');
+        if (event) {
+          console.log('Document stored successfully. BOL Number:', event.args[0].toString());
+        }
+
+        setSnackbar({
+          open: true,
+          message: `Document registered successfully! Transaction hash: ${tx.hash}`,
+          severity: 'success'
         });
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setSnackbar({ open: true, message: 'Document registered successfully!', severity: 'success' });
+        // Reset form
         setFormData({
           billOfLadingNumber: '',
           shipFrom: '',
@@ -103,7 +134,11 @@ console.log("contract : ", contract.target, " isConnected ", isConnected);
         });
       } catch (error) {
         console.error("Error registering document:", error);
-        setSnackbar({ open: true, message: `Error: ${error.message}`, severity: 'error' });
+        setSnackbar({
+          open: true,
+          message: `Error: ${error.message}`,
+          severity: 'error'
+        });
       } finally {
         setIsLoading(false);
       }
@@ -126,6 +161,7 @@ console.log("contract : ", contract.target, " isConnected ", isConnected);
               fullWidth
               label="Bill of Lading Number"
               name="billOfLadingNumber"
+              type="number"
               value={formData.billOfLadingNumber}
               onChange={handleChange}
               error={!!errors.billOfLadingNumber}
