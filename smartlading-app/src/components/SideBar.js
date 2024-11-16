@@ -31,9 +31,9 @@ const Sidebar = () => {
   const location = useLocation();
   const links = [
     { label: '⛯ Home', path: '/' },
-    { label: '⚓ Register Bill of Lading', path: '/register' },
-    { label: '🛳️ Upload Bill of Lading', path: '/uploadBL' },
-    { label: '🗺️ Dashboard', path: '/dashboard' },
+    { label: '⚓ Register Bill of Lading', path: '/app/register' },
+    { label: '🛳️ Upload Bill of Lading', path: '/app/uploadBL' },
+    { label: '🗺️ Dashboard', path: '/app/dashboard' },
   ];
 
   const isActive = (path) => {
