@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
+import { ethers } from 'ethers';  // Add this import
 import {
   TextField,
   Button,
@@ -10,6 +11,9 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
+
+//IEL
+import { contractAddress, contractABI } from '../config/contract';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -26,6 +30,97 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+
+  const [walletInfo, setWalletInfo] = useState({
+    address: null,
+    documentCount: null
+  });
+
+  // Add this after your state declarations
+useEffect(() => {
+  const testContractConnection = async () => {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      
+      const count = await contract.getDocumentCount();
+      console.log('Current document count:', count.toString());
+      console.log('Contract connected successfully at address:', contractAddress);
+    } catch (error) {
+      console.error('Contract connection error:', error);
+    }
+  };
+
+  testContractConnection();
+}, []);
+
+  // Function to get wallet and contract info
+  const getWalletInfo = async () => {
+    try {
+      // Get provider and accounts
+      //const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545"); // Connect to Anvil network
+      const network = await provider.getNetwork();
+      console.log("IEL2 Connected to network:", network.chainId);
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      
+      // Get signer and contract
+      const signer = await provider.getSigner();
+      console.log("IEL2 signer:", signer.address);
+
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      
+      // Get document count
+      const count = await contract.getDocumentCount();
+
+      // Update state with wallet info
+      setWalletInfo({
+        address: accounts[0],
+        documentCount: count.toString()
+      });
+
+      // Log the information
+      console.log('Wallet Connected:', {
+        address: accounts[0],
+        documentCount: count.toString()
+      });
+
+    } catch (error) {
+      console.error('Error getting wallet info:', error);
+      setSnackbar({
+        open: true,
+        message: `Error connecting to wallet: ${error.message}`,
+        severity: 'error'
+      });
+    }
+  };
+
+  // Listen for account changes
+  useEffect(() => {
+    if (window.ethereum) {
+      // Initial connection
+      getWalletInfo();
+
+      // Listen for account changes
+      window.ethereum.on('accountsChanged', (accounts) => {
+        console.log('Account changed:', accounts[0]);
+        getWalletInfo();
+      });
+
+      // Listen for network changes
+      window.ethereum.on('chainChanged', (chainId) => {
+        console.log('Network changed:', chainId);
+        getWalletInfo();
+      });
+
+      // Cleanup
+      return () => {
+        window.ethereum.removeListener('accountsChanged', getWalletInfo);
+        window.ethereum.removeListener('chainChanged', getWalletInfo);
+      };
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
