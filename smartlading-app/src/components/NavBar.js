@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
-import logoy from '../asset/logoy.png';
+import logoy from '../asset/logo_2.png';
 
 function NavBar() {
   const [walletAddress, setWalletAddress] = useState('');
