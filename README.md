@@ -87,6 +87,24 @@ Transactions on the smart contract : https://sepolia.scrollscan.com/address/0xb0
 
 https://explorer.oasis.io/testnet/sapphire/address/0x14dC79964da2C08b23698B3D3cc7Ca32193d9955
 
+##  Chainlink CCIP 
+Thsi feature allows to storeHashDocument from Fuji testnet to Sepolia testnet.
+The nature of this project handles so many transactions per day (up to 4 million event per day at peak), so it make sense to have this dApp on different chains to handle the load, and Chainlink CCIP provides the needed feature to achieve this goal.
+
+Tx hash : 0x0abac917854df7934fadc75c626c6863ade8feba42c902b5dccfdaf14360e3c0
+
+https://ccip.chain.link/tx/0x0abac917854df7934fadc75c626c6863ade8feba42c902b5dccfdaf14360e3c0
+
+##  Sepolia Ethereum 
+
+The smart contract was also deployed on Sepolia Ethereum and there were some transaction on it via CCIP :
+
+Address : 0x2b4b7F0b5f66Bc6B55E146fe0e7Ad0393221323B
+
+ether scan : https://sepolia.etherscan.io/address/0x2b4b7F0b5f66Bc6B55E146fe0e7Ad0393221323B
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
