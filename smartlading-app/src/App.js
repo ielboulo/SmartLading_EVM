@@ -34,7 +34,7 @@ const MainAppLayout = () => {
         >
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/bill-of-lading/:bolNumber" element={<BillOfLadingDetails />} />
+            <Route path="/app/bill-of-lading/:bolNumber" element={<BillOfLadingDetails />} />
             <Route path="/register" element={<Register />} />
             <Route path="/uploadBL" element={<UploadBL />} />
             <Route path="/bl-details" element={<BillOfLadingDetails />} />

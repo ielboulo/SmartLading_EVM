@@ -60,7 +60,7 @@ const Dashboard = () => {
   };
 
   const handleShowBL = (bolNumber) => {
-    navigate(`/bill-of-lading/${bolNumber}`);
+    navigate(`/app/bill-of-lading/${bolNumber}`);
   };
 
   return (
