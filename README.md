@@ -95,6 +95,8 @@ Tx hash : 0x0abac917854df7934fadc75c626c6863ade8feba42c902b5dccfdaf14360e3c0
 
 https://ccip.chain.link/tx/0x0abac917854df7934fadc75c626c6863ade8feba42c902b5dccfdaf14360e3c0
 
+Incoming transaction : https://ccip.chain.link/address/0x8d228c57c7608e84bb0c462e20cfe764c72e7cf5 
+
 ##  Sepolia Ethereum 
 
 The smart contract was also deployed on Sepolia Ethereum and there were some transaction on it via CCIP :
